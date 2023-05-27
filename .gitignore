@@ -1,0 +1,5 @@
+zz.bin
+*.out
+*.o
+interp_*
+*.txt
