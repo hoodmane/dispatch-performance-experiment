@@ -159,43 +159,49 @@ unsigned char *prepare_data() {
 #define CC "xxx"
 #endif
 
-#define COMPILER CC " "
+#ifndef OPTFLAG
+#define OPTFLAG ""
+#endif
+
+
+int test(void) {
+    unsigned char *tc = (unsigned char *)"\x01\x01\x03\x06\x02\x02\x04\x05\x00";
+    int result;
+    result = interp_switch(tc, 1);
+    printf(CC " Result = %d\n", result);
+    result = interp_cgoto(tc, 1);
+    printf(CC " Goto result = %d\n", result);
+    result = interp_tail_call(tc, 1);
+    printf(CC " tailcall result = %d\n", result);
+    return 0;
+}
 
 int main(int argc, const char *argv[]) {
   // Small test
-  unsigned char *tc = (unsigned char *)"\x01\x01\x03\x06\x02\x02\x04\x05\x00";
+  // test();
+
   int result;
-  // result = interp_switch(tc, 1);
-  // printf(COMPILER "Result = %d\n", result);
-  // result = interp_cgoto(tc, 1);
-  // printf(COMPILER "Goto result = %d\n", result);
-  // result = interp_tail_call(tc, 1);
-  // printf(COMPILER "tailcall result = %d\n", result);
 
-  // return 0;
+  clock_t starttime, endtime;
+  unsigned char *data = prepare_data();
 
-  {
-    clock_t starttime, endtime;
-    unsigned char *data = prepare_data();
+  starttime = clock();
+  result = interp_switch(data, 1);
+  endtime = clock();
+  printf(OPTFLAG " " CC " switch = %.3lf (%d)\n",
+          ((double)endtime - starttime) / CLOCKS_PER_SEC, result);
 
-    starttime = clock();
-    result = interp_switch(data, 1);
-    endtime = clock();
-    printf(COMPILER "switch = %.3lf (%d)\n",
-           ((double)endtime - starttime) / CLOCKS_PER_SEC, result);
+  starttime = clock();
+  result = interp_cgoto(data, 1);
+  endtime = clock();
+  printf(OPTFLAG " " CC " goto   = %.3lf (%d)\n",
+          ((double)endtime - starttime) / CLOCKS_PER_SEC, result);
 
-    starttime = clock();
-    result = interp_cgoto(data, 1);
-    endtime = clock();
-    printf(COMPILER "goto   = %.3lf (%d)\n",
-           ((double)endtime - starttime) / CLOCKS_PER_SEC, result);
-
-    starttime = clock();
-    result = interp_tail_call(data, 1);
-    endtime = clock();
-    printf(COMPILER "tcall  = %.3lf (%d)\n",
-           ((double)endtime - starttime) / CLOCKS_PER_SEC, result);
-  }
+  starttime = clock();
+  result = interp_tail_call(data, 1);
+  endtime = clock();
+  printf(OPTFLAG " " CC " tcall  = %.3lf (%d)\n",
+          ((double)endtime - starttime) / CLOCKS_PER_SEC, result);
 
   return 0;
 }
