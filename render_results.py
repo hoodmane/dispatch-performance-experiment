@@ -28,8 +28,6 @@ for optflag in OPTFLAGS:
             opt_cc_dict[method] = float(time)
 
 
-
-
 # denom = d["gcc"]["goto"]
 # denom = d["emcc"]["switch"]
 # denom = d["emcc"]["tcall"]
@@ -46,5 +44,8 @@ for optflag in ["-O2", "-O3", "-Os"]:
     print("OPTFLAG:", optflag)
     print((" " * 6) + "".join(["%7s" % cc for cc in COMPILERS]))
     for method in ["switch", "goto", "tcall"]:
-        print((f"{method:<6}") + "".join(["%7.3f" % optflag_dict[cc][method] for cc in COMPILERS]))
+        print(
+            f"{method:<6}"
+            + "".join(["%7.3f" % optflag_dict[cc][method] for cc in COMPILERS])
+        )
     print("\n")
