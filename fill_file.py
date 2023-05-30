@@ -1,3 +1,4 @@
+#!/bin/python3
 # Run this with Python 3 to fill up a file with random integer bytes that
 # represent our interpreter's opcodes.
 import random

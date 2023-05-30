@@ -175,6 +175,19 @@ int test(void) {
   return 0;
 }
 
+#define cat(a,...) cat_impl(a, __VA_ARGS__)
+#define cat_impl(a,...) a ## __VA_ARGS__
+
+#define METHOD_switch 1
+#define METHOD_cgoto 2
+#define METHOD_tcall 3
+
+#define METHOD_VAL cat(METHOD_, METHOD)
+
+
+#define CC_OPTFLAG CC " " OPTFLAG
+
+
 int main(int argc, const char *argv[]) {
   // Small test
   // test();
@@ -183,24 +196,34 @@ int main(int argc, const char *argv[]) {
 
   clock_t starttime, endtime;
   unsigned char *data = prepare_data();
+  if (data == NULL) {
+    fprintf(stderr, "prepare_data failed\n");
+    exit(1);
+  }
 
+  #if !defined(METHOD) || METHOD_VAL == METHOD_switch
   starttime = clock();
   result = interp_switch(data, 1);
   endtime = clock();
-  printf(OPTFLAG " " CC " switch = %.3lf (%d)\n",
+  printf(CC_OPTFLAG " switch = %.3lf (%d)\n",
          ((double)endtime - starttime) / CLOCKS_PER_SEC, result);
+  #endif
 
+  #if !defined(METHOD) || METHOD_VAL == METHOD_cgoto
   starttime = clock();
   result = interp_cgoto(data, 1);
   endtime = clock();
-  printf(OPTFLAG " " CC " goto   = %.3lf (%d)\n",
+  printf(CC_OPTFLAG " goto   = %.3lf (%d)\n",
          ((double)endtime - starttime) / CLOCKS_PER_SEC, result);
+  #endif
 
+  #if !defined(METHOD) || METHOD_VAL == METHOD_tcall
   starttime = clock();
   result = interp_tail_call(data, 1);
   endtime = clock();
-  printf(OPTFLAG " " CC " tcall  = %.3lf (%d)\n",
+  printf(CC_OPTFLAG " tcall  = %.3lf (%d)\n",
          ((double)endtime - starttime) / CLOCKS_PER_SEC, result);
+  #endif
 
   return 0;
 }
